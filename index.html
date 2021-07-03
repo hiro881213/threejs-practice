@@ -4,7 +4,8 @@
         <meta charset="UTF-8">
         <!-- Three.jsライブラリ -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r127/three.min.js"></script>
-        <script src="./js/index.js"></script>    
+        <script src="./js/index.js"></script>
+        <script src="./js/material.js"></script>
     </head>
     <body>
         <div style = 'width:960px; height:540px;'>
@@ -19,6 +20,10 @@
             
             <li style = 'display:inline; margin-left: 30px;'>
                 <button onclick = "makeMaterial()">マテリアル</button>
+            </li>
+
+            <li style = 'display:inline; margin-left: 30px;'>
+                <button onclick = "makeGeometry()">ジオメトリ</button>
             </li>
         </ul>
     </body>

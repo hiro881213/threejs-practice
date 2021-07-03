@@ -83,112 +83,143 @@ const makeCube = () => {
     // Three.jsの表示結果を更新する
     // Three.jsでは自動的に画面が最新に切り替わらないので、明示的に画面が更新されるようにする
     tickCube();
- 
+
 }
 
 /**
- * マテリアル生成処理
+ * ジオメトリ表示処理
  */
+const makeGeometry = () => {
 
-const makeMaterial = () => {
-
-    // ---------------------------------------------------
-    // レンダラ設定処理
-    // ---------------------------------------------------
-
+    // ----------------------------------------
     // レンダラ生成処理
+    // ----------------------------------------
+
+    // レンダラを作成する
     const renderer = new THREE.WebGLRenderer({
         canvas: document.querySelector('#myCanvas')
-    });
+    })
 
-    // デバイスの解像度をセットする
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // レンダラのサイズを設定する
+    renderer.setSize(width, height);
 
-    // レンダラのサイズをセットする
-    renderer.setSize(width,height);
-
-    // ---------------------------------------------------
+    // ----------------------------------------
     // シーン生成処理
-    // ---------------------------------------------------
+    // ----------------------------------------
 
     const scene = new THREE.Scene();
 
-    // ---------------------------------------------------
+    // ----------------------------------------
     // カメラ設定処理
-    // ---------------------------------------------------
+    // ----------------------------------------
 
-    // カメラを生成処理(画角:45,アスペクト比 width/height)
-    const camera = new THREE.PerspectiveCamera(45, width/height);
-
+    // カメラを生成する
+    // 第一引数：画角
+    // 第二引数：アスペクト比
+    // 第三引数: 描画開始距離
+    // 第四引数: 描画終了距離
+    const camera = new THREE.PerspectiveCamera(45, width / height, 1,10000);
+    
     // カメラ位置を設定する
-    camera.position.set(0, 0, +1000);
+    camera.position.set(0,500, +1000);
 
-    // ---------------------------------------------------
-    // 球体設定処理
-    // ---------------------------------------------------
+    // lookAtメソッド:どの位置からでも、指定された座標に強制的に追い続ける
+    camera.lookAt(new THREE.Vector3(0,0,0));
 
-    // ジオメトリ(形状:球体)を生成する
-    // 第一引数: 半径
-    // 第二引数: 経度分割数
-    // 第三引数: 緯度分割数
-    const geometry = new THREE.SphereGeometry(300,30,30);
+    // ----------------------------------------------
+    // コンテナ生成処理
+    // ----------------------------------------------
 
-    // 画像読み込みメソッドを取得する
-    const loader = new THREE.TextureLoader();
+    // Object3D
+    //  複数のオブジェクトを格納する箱
+    const container = new THREE.Object3D();
+    
+    // コンテナをシーンに描画する
+    scene.add(container);
+    
+    // ----------------------------------------------
+    // マテリアル生成処理
+    // ----------------------------------------------
 
-    // テクスチャ画像を設定する
-    const texture = loader.load('../img/earth_texture.jpg');
-
-    // マテリアルを生成する
-    // MeshStandardMaterial
-    //  物理ベースレンダリング
-    //  → 光の反射など現実に近いマテリアルを再現する
+    // THREE.DoubleSide
+    //  ジオメトリの両面にマテリアルを描画する
     const material = new THREE.MeshStandardMaterial({
-        map: texture
+        color: 0xff0000,
+        side: THREE.DoubleSide
     });
 
-    // メッシュを生成する
-    const mesh = new THREE.Mesh(geometry,material);
+    // ----------------------------------------------
+    // 平行光源生成処理
+    // ----------------------------------------------
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff);
 
-    // メッシュをシーンに描画する
-    scene.add(mesh);
-
-    // ---------------------------------------------------
-    // 光源設定処理
-    // ---------------------------------------------------
-
-    // 平行光源を生成する
-    // 平行光源
-    //   無限遠にある平行な光源の光のため、影はオブジェクトの位置に影響されない
-    // 第一引数: hex:色 光源の色を16進数色コードで設定する
-    // 第二引数: intensity:光の強さ 光の強さが他のオブジェクトへ与える影響の強さを指定する
-    const directionalLight = new THREE.DirectionalLight(0xFFFFFF,1.5);
-
-    // 光源の位置を設定する
+    // 平行光源の位置を設定する
     directionalLight.position.set(1,1,1);
 
-    // 光源をメッシュに描画する
+    // 平行光源をシーンに配置する
     scene.add(directionalLight);
+
+    // ----------------------------------------------
+    // 環境光生成処理
+    // ----------------------------------------------
+
+    // ・環境光源
+    //    対象に均等に光を当てる
+    // ・AmbientLignt
+    //    環境光源を生成するメソッド
+
+    const ambientLight = new THREE.AmbientLight(0x999999);
+    scene.add(ambientLight);
+
+    // ----------------------------------------------
+    // ジオメトリ生成処理
+    // ----------------------------------------------
+
+    const geometryList =[
+        new THREE.SphereGeometry(50),           // 球体
+        new THREE.BoxGeometry(100,100,100),     // 直方体
+        new THREE.PlaneGeometry(100,100),       // 平面
+        new THREE.TetrahedronGeometry(100,0),   // カプセル形状 
+        new THREE.ConeGeometry(100,100,32),     // 三角錐
+        new THREE.CylinderGeometry(50, 50, 100, 32), // 円柱
+        new THREE.TorusGeometry(50, 30, 16, 100)     // ドーナツ形状
+    ];
+
+    geometryList.map((geometry,index) => {
+
+        // 形状とマテリアルからメッシュを生成する
+        const mesh = new THREE.Mesh(geometry, material);
+
+        // コンテナにメッシュを配置する
+        // → 3D表示インスタンスのsceneプロパティが3D表示空間になる
+        container.add(mesh);
+
+        // 円周上に配置
+        mesh.position.x = 400 * Math.sin((index / geometryList.length) * Math.PI * 2);
+        mesh.position.z = 400 * Math.cos((index / geometryList.length) * Math.PI * 2);
+
+    });
 
     /**
      * マテリアル用のアニメーション
      */
-    const tickMaterial = () => {
+    const tickGeometry = () => {
 
-        // メッシュをy軸方向で回転させる
-        mesh.rotation.y += 0.01
+        // メッシュを回転させる
+        container.rotation.y += 0.01;
+        container.rotation.x += 0.01;
+        container.rotation.z += 0.01;
 
         // レンダリングを実行する
         renderer.render(scene, camera);
 
         // アニメーションにする
-        requestAnimationFrame(tickMaterial);
+        requestAnimationFrame(tickGeometry);
 
     }
 
     // アニメーション
-    tickMaterial();
+    tickGeometry();
 
-};
-
-
+}
