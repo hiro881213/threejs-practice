@@ -7,8 +7,19 @@
         <script src="./js/index.js"></script>    
     </head>
     <body>
-        <!-- ThreeJSの内容を描画する -->
-        <canvas id="myCanvas"></canvas>
-        <button onclick = "init()">立方体</button>
+        <div style = 'width:960px; height:540px;'>
+            <!-- ThreeJSの内容を描画する -->
+            <canvas id="myCanvas"></canvas>
+        </div>
+        <br>
+        <ul>
+            <li style = 'display:inline'>
+                <button onclick = "makeCube()">立方体</button>
+            </li>
+            
+            <li style = 'display:inline; margin-left: 30px;'>
+                <button onclick = "init()">マテリアル</button>
+            </li>
+        </ul>
     </body>
 </html>

@@ -1,20 +1,27 @@
+// サイズを指定
+const width = 960;
+const height = 540;
+    
+
 /**
- * THREE.JS描画処理
+ * オンロード関数
  */
-const init = () => {
+window.onload = function() {
+    // 立方体実行処理
+    makeCube();
+};
+
+/**
+ * 立方体生成処理
+ */
+const makeCube = () => {
     
     // WebGLを描画するためのレンダラを生成する
     const renderer = new THREE.WebGLRenderer({
-
         // 描画先のidを指定する
         canvas: document.querySelector('#myCanvas')
-    
     });
 
-    // サイズを指定
-    const width = 960;
-    const height = 540;
-    
     // デバイスの解像度をセットする
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -78,10 +85,5 @@ const init = () => {
     tick();
  
 }
-
-// ページの読み込みを待つ
-// WebGLの処理はページの読み込みが終わってから実行させる
-// loadイベントが完了後initイベントを実行する
-//window.addEventListener('load', init);
 
 
