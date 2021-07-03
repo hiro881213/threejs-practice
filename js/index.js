@@ -133,11 +133,19 @@ const makeMaterial = () => {
     // 第三引数: 緯度分割数
     const geometry = new THREE.SphereGeometry(300,30,30);
 
+    // 画像読み込みメソッドを取得する
+    const loader = new THREE.TextureLoader();
+
+    // テクスチャ画像を設定する
+    const texture = loader.load('../img/earth_texture.jpg');
+
     // マテリアルを生成する
     // MeshStandardMaterial
     //  物理ベースレンダリング
     //  → 光の反射など現実に近いマテリアルを再現する
-    const material = new THREE.MeshStandardMaterial({color: 0xFF0000});
+    const material = new THREE.MeshStandardMaterial({
+        map: texture
+    });
 
     // メッシュを生成する
     const mesh = new THREE.Mesh(geometry,material);
@@ -154,7 +162,7 @@ const makeMaterial = () => {
     //   無限遠にある平行な光源の光のため、影はオブジェクトの位置に影響されない
     // 第一引数: hex:色 光源の色を16進数色コードで設定する
     // 第二引数: intensity:光の強さ 光の強さが他のオブジェクトへ与える影響の強さを指定する
-    const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
+    const directionalLight = new THREE.DirectionalLight(0xFFFFFF,1.5);
 
     // 光源の位置を設定する
     directionalLight.position.set(1,1,1);
